@@ -3,7 +3,7 @@ android {
  namespace 'com.gatarme.app'
  buildFeatures { buildConfig true }
  compileSdk 35
- defaultConfig { applicationId 'com.gatarme.app'; minSdk 27; targetSdk 35; versionCode 1; versionName '1.0.0' }
+ defaultConfig { applicationId 'com.gatarme.app'; minSdk 27; targetSdk 35; versionCode 2; versionName '1.0.1' }
  signingConfigs { release { if (System.getenv('GATARME_KEYSTORE')) { storeFile file(System.getenv('GATARME_KEYSTORE')); storePassword System.getenv('GATARME_STORE_PASSWORD'); keyAlias 'gatarme'; keyPassword System.getenv('GATARME_KEY_PASSWORD') } } }
  buildTypes { debug { if (System.getenv('GATARME_KEYSTORE')) signingConfig signingConfigs.release }; release { minifyEnabled false; if (System.getenv('GATARME_KEYSTORE')) signingConfig signingConfigs.release } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }

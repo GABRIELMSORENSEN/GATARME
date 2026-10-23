@@ -12,6 +12,7 @@ import java.time.*;
 import org.json.*;
 
 public class MainActivity extends Activity {
+  static boolean visible;
   WebView web;
   String mediaKind = "audio";
 
@@ -96,7 +97,15 @@ public class MainActivity extends Activity {
 
   protected void onResume() {
     super.onResume();
+    visible = true;
+    if (!AlarmService.current.isEmpty())
+      startActivity(new Intent(this, RingActivity.class));
     if (web != null) web.evaluateJavascript("window.refresh&&refresh()", null);
+  }
+
+  protected void onPause() {
+    visible = false;
+    super.onPause();
   }
 
   void call(String fn, JSONObject o) {
@@ -116,6 +125,7 @@ public class MainActivity extends Activity {
         JSONObject d = Store.data(MainActivity.this);
         JSONObject status = new JSONObject();
         NotificationManager nm = getSystemService(NotificationManager.class);
+        status.put("overlay", Settings.canDrawOverlays(MainActivity.this));
         status.put("exact", Scheduler.allowed(MainActivity.this));
         status.put("notifications", nm.areNotificationsEnabled());
         NotificationChannel ch = nm.getNotificationChannel(AlarmService.CHANNEL);
@@ -187,7 +197,7 @@ public class MainActivity extends Activity {
               return;
             }
             Scheduler.at(MainActivity.this, "test", System.currentTimeMillis() + 15000, false);
-            message("Teste em 15 segundos. Bloqueie a tela para verificar.");
+            message("Teste em 15 segundos. Use outro app ou bloqueie a tela para verificar.");
           });
     }
 
@@ -222,6 +232,10 @@ public class MainActivity extends Activity {
                       new Intent(
                           Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
                           Uri.parse("package:" + getPackageName()));
+                  break;
+                case "overlay":
+                  i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                      Uri.parse("package:" + getPackageName()));
                   break;
                 case "battery":
                   i =

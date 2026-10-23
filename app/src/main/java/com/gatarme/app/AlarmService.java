@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.media.*;
 import android.os.*;
+import android.provider.Settings;
 import java.util.*;
 import org.json.*;
 
@@ -99,12 +100,21 @@ public class AlarmService extends Service {
             .setContentIntent(pi)
             .setFullScreenIntent(pi, true)
             .addAction(0, "Adiar", action("snooze"))
-            .addAction(0, "Desligar agora", action("stop"))
+            .addAction(0, "Abrir alarme", pi)
             .build();
     startForeground(41, n);
     if (changed) {
       stopSound();
       play(j);
+      // Full-screen notifications become banners while the phone is unlocked.
+      // The user-authorized overlay permission also permits this activity launch.
+      if (Settings.canDrawOverlays(this) || MainActivity.visible) {
+        try {
+          startActivity(full);
+        } catch (RuntimeException e) {
+          Store.event(this, "Tela do alarme: " + e.getMessage());
+        }
+      }
       sendBroadcast(new Intent("com.gatarme.UPDATE").setPackage(getPackageName()));
     }
     return START_STICKY;

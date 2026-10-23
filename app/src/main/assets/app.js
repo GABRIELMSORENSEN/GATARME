@@ -120,7 +120,7 @@ function alarms() {
     .sort((a, b) => a.next - b.next)[0];
   let s = data.status,
     ready =
-      s.exact && s.notifications && s.fullscreen && s.channel && s.volume > 0;
+      s.exact && s.notifications && s.fullscreen && s.overlay && s.channel && s.volume > 0;
   return `<div class="eyebrow">CADA PLANTÃO, NO TEMPO CERTO</div><h1>Seu descanso.<br>Sua próxima jornada.</h1><p>Duas rotinas ou muitas. Um lugar para organizar todas.</p>${next ? `<section class="hero"><div class="row"><span class="eyebrow">PRÓXIMO ALARME</span><span class="badge">↻ RECORRENTE</span></div><div class="time">${time(next.next)}</div><div style="margin-top:10px">${esc(next.name)}</div><p style="margin-bottom:0">${fmt(next.next, { weekday: "long", day: "numeric", month: "long" })}</p></section>` : `<section class="hero"><span class="eyebrow">SEU TEMPO, ORGANIZADO</span><div class="time">--:--</div><p>Configure o primeiro plantão.<br>Os próximos se organizam sozinhos.</p></section>`}
 ${!ready ? `<button class="secondary warning" onclick="tab('settings')">⚠ Complete a proteção dos alarmes →</button>` : ""}<div class="row section"><h2 style="margin:0">Suas escalas <span class="sub">${data.jobs.length}</span></h2><span class="sub">Sem remarcar todo dia</span></div>${data.jobs.map((j) => `<article class="card job" style="--job:${esc(j.color)}"><div class="row"><h3><span class="dot"></span>${esc(j.name)}</h3><input type="checkbox" class="switch" aria-label="Ativar ${esc(j.name)}" ${j.enabled ? "checked" : ""} onchange="toggle('${j.id}',this.checked)"></div><div class="row"><div><div class="time">${j.next ? time(j.next) : esc(j.start)}</div><div class="sub">${esc(describe(j))}</div></div><button class="tiny" onclick="edit('${j.id}')">Editar ↗</button></div><div class="sub" style="margin-top:14px">${j.enabled ? (j.next ? "Próximo: " + fmt(j.next, { weekday: "short", day: "2-digit", month: "short" }) : "Sem ocorrência nos próximos 2 anos") : "Escala pausada por você"} · ${j.offsets.length} toque(s) por plantão</div></article>`).join("")}<button class="primary" onclick="edit()">＋ Adicionar escala</button><div class="hint">↻ Desligar o toque de hoje não desativa a escala. Ela só para quando você desliga a chave acima.</div>`;
 }
@@ -374,7 +374,7 @@ function settings() {
     [
       "notifications",
       "Notificações",
-      "Controles para adiar e desligar.",
+      "Controles para adiar e abrir o alarme.",
       s.notifications && s.channel,
     ],
     [
@@ -382,6 +382,12 @@ function settings() {
       "Tela cheia",
       "Mostrar o alarme na tela bloqueada.",
       s.fullscreen,
+    ],
+    [
+      "overlay",
+      "Abrir sobre outros apps",
+      "Abrir a tela do alarme também com o celular desbloqueado.",
+      s.overlay,
     ],
     [
       "battery",
@@ -402,7 +408,7 @@ function settings() {
       s.dnd,
     ],
   ];
-  return `<div class="eyebrow">PRONTO PARA DESPERTAR</div><h1>Proteja sua rotina.</h1><p>Autorize as funções abaixo e faça um teste com a tela bloqueada.</p><div class="card">${rows.map(([k, n, d, ok]) => `<div class="permission ${ok ? "ok" : ""}"><span class="indicator">${ok ? "✓" : "!"}</span><div class="info"><h3 style="font-size:14px">${n}</h3><div class="sub">${d}</div></div><button onclick="Native.permission('${k}')">${ok ? "Ajustar" : "Permitir"}</button></div>`).join("")}</div><button class="primary" onclick="Native.test()">◷ Testar alarme em 15 segundos</button><div class="hint warning">No Samsung: Ajustes → Assistência do aparelho → Bateria → Limites de uso em segundo plano → Aplicativos nunca suspensos. Adicione o GATARME.<br><br>Nenhum app toca com o celular desligado, sem bateria ou após “Forçar parada”. Se isso ocorrer, abra o GATARME novamente. Depois de reiniciar, os alarmes são restaurados automaticamente.</div><button class="secondary" onclick="Native.permission('app')">Abrir configurações do GATARME</button><details><summary>Última atividade do alarme</summary><p style="overflow-wrap:anywhere">${esc(s.event)}</p></details><div class="section"><h2>Privacidade, por padrão.</h2><p>Escalas e arquivos ficam neste aparelho. Sem conta, anúncios ou rastreamento próprio. Somente o YouTube usa a internet quando você abre a seleção ou reproduz um vídeo.</p><div class="sub">GATARME 1.0.0 · Feito para jornadas reais.</div></div>`;
+  return `<div class="eyebrow">PRONTO PARA DESPERTAR</div><h1>Proteja sua rotina.</h1><p>Autorize as funções abaixo e faça um teste com a tela bloqueada.</p><div class="card">${rows.map(([k, n, d, ok]) => `<div class="permission ${ok ? "ok" : ""}"><span class="indicator">${ok ? "✓" : "!"}</span><div class="info"><h3 style="font-size:14px">${n}</h3><div class="sub">${d}</div></div><button onclick="Native.permission('${k}')">${ok ? "Ajustar" : "Permitir"}</button></div>`).join("")}</div><button class="primary" onclick="Native.test()">◷ Testar alarme em 15 segundos</button><div class="hint warning">No Samsung: Ajustes → Assistência do aparelho → Bateria → Limites de uso em segundo plano → Aplicativos nunca suspensos. Adicione o GATARME.<br><br>Nenhum app toca com o celular desligado, sem bateria ou após “Forçar parada”. Se isso ocorrer, abra o GATARME novamente. Depois de reiniciar, os alarmes são restaurados automaticamente.</div><button class="secondary" onclick="Native.permission('app')">Abrir configurações do GATARME</button><details><summary>Última atividade do alarme</summary><p style="overflow-wrap:anywhere">${esc(s.event)}</p></details><div class="section"><h2>Privacidade, por padrão.</h2><p>Escalas e arquivos ficam neste aparelho. Sem conta, anúncios ou rastreamento próprio. Somente o YouTube usa a internet quando você abre a seleção ou reproduz um vídeo.</p><div class="sub">GATARME 1.0.1 · Feito para jornadas reais.</div></div>`;
 }
 function goBack() {
   if ($("#editor").open) closeEditor();

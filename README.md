@@ -45,6 +45,14 @@ Os modelos cobrem escalas comuns; não existe uma lista finita de todas as conve
 
 Cada ciclo de 12×36 repete o início a cada 48 horas. As datas iniciais definem a fase de cada emprego. Dois empregos não precisam começar no mesmo dia.
 
+## Atualização 1.0.1
+
+- A tela do alarme também abre sobre outros aplicativos com o celular desbloqueado. Em **Proteção**, permita **Abrir sobre outros apps**; sem essa permissão, o Android pode mostrar somente a notificação enquanto a tela estiver em uso.
+- Para encerrar o toque, arraste o círculo até a direita. Toques e arrastos curtos não desligam o alarme. A soneca continua disponível e a escala permanece ativa.
+- Leitores de tela têm a ação acessível “Parar este alarme”. A notificação abre os controles em vez de desligar com um toque.
+
+A abertura usa a [permissão documentada pelo Android para iniciar uma atividade em segundo plano](https://developer.android.com/guide/components/activities/background-starts), exclusivamente quando um alarme dispara.
+
 ## Como funciona
 
 Interface local HTML/CSS/JavaScript em WebView, com agendamento e reprodução nativos em Java. O alarme **não depende da WebView aberta**.

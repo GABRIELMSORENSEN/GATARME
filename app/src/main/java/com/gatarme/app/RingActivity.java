@@ -41,6 +41,10 @@ public class RingActivity extends Activity {
       registerReceiver(
           update, new IntentFilter("com.gatarme.UPDATE"), Context.RECEIVER_NOT_EXPORTED);
     else registerReceiver(update, new IntentFilter("com.gatarme.UPDATE"));
+    if (AlarmService.current.isEmpty()) {
+      finish();
+      return;
+    }
     draw();
     handler.postDelayed(watchdog, 2000);
   }
@@ -173,12 +177,10 @@ public class RingActivity extends Activity {
         "Adiar " + j.optInt("snooze", 5) + (j.optInt("snooze", 5) == 1 ? " minuto" : " minutos"));
     content.addView(snooze, new LinearLayout.LayoutParams(-1, dp(64)));
     snooze.setOnClickListener(v -> act("snooze"));
-    Button stop = new Button(this);
-    stop.setText("DESLIGAR ESTE ALARME");
-    stop.setTextColor(-1);
-    stop.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));
-    content.addView(stop, new LinearLayout.LayoutParams(-1, dp(72)));
-    stop.setOnClickListener(v -> act("stop"));
+    SwipeStopView stop = new SwipeStopView(this, accent, () -> act("stop"));
+    LinearLayout.LayoutParams stopParams = new LinearLayout.LayoutParams(-1, dp(80));
+    stopParams.topMargin = dp(16);
+    content.addView(stop, stopParams);
     text(content, "Sua escala continua ativa para os próximos dias.", 13, 0xffdddddd);
     frame.setOnApplyWindowInsetsListener(
         (v, i) -> {
